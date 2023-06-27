@@ -1,0 +1,8 @@
+#ifndef OBJECT_COMMON_H
+#define OBJECT_COMMON_H
+
+// #include "obj.d/constant.h"
+#include "obj.d/polynomial.h"
+// #include "obj.d/operations.h"
+
+#endif

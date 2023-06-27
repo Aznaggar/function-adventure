@@ -1,0 +1,7 @@
+#ifndef PRE_COMMON_H
+#define PRE_COMMON_H
+
+#include "pre.d/numbers.h"
+#include "pre.d/polynomials.h"
+
+#endif
