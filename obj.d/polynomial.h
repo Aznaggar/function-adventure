@@ -7,30 +7,21 @@
 #include <utility>
 
 #include "function.h"
-
+#include "../utils.h"
 
 namespace obj::polynomial
 {
-    template<typename T1, typename T2>
-    struct Greater
-    {
-        bool operator() (
-            const std::pair<T1, T2>& lhs,
-            const std::pair<T1, T2>& rhs) const
-        {
-            return lhs.first > rhs.first;
-        }
-    };
-
     using coeffDefType = signed int;
     using powerDefType = unsigned int;
-
+    
     template<typename powerType=powerDefType, typename coeffType=coeffDefType>
     struct Polynomial : public obj::function::Function<obj::function::functionType::polynomial>
     {
     public:
         using polyArgType = std::pair<powerType, coeffType>;
         using polyArgListType = std::list<polyArgType>;
+        using polyArgComparer = PairCompareGreater<powerType, coeffType>;
+        using polyArgListIt = polyArgListType::iterator;
 
         Polynomial() = delete;
         Polynomial(const polyArgListType& argList) : _argList(argList) { sort(); }
@@ -79,10 +70,38 @@ namespace obj::polynomial
         /* To do: Fraction function object*/
         // Polynomial& operator*(const Polynomial& other);
         // Polynomial& operator/(const Polynomial& other);
+        void simplify()
+        {
+            polyArgListType unique, simplified;
+            for(const auto& p : _argList)
+            {
+                if (find(unique.begin(), unique.end(), p) != unique.end())
+                {
+                    if (auto it = find(simplified.begin(), simplified.end(), p); it != simplified.end())
+                    {
+                        it->second += p.second;
+                    }
+                }
+                else
+                {
+                    unique.push_back(p);
+                    simplified.push_back(p);
+                }
+            }
+            _argList = simplified;
+        }
+
     private:
         polyArgListType _argList;
-        void inline sort() { _argList.sort(Greater<powerType, coeffType>()); }
-        void inline simplify() { }
+        void inline sort() { _argList.sort(polyArgComparer()); }
+        
+        template<class InputIt = polyArgListIt, class T = polyArgType>
+        InputIt find(InputIt first, InputIt last, const T& value)
+        {
+            for (; first != last; ++first)
+                if (first->first == value.first) return first;
+            return last;
+        }
     };
 }
 

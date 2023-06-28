@@ -33,7 +33,7 @@ namespace obj::function
     {
         using retType = RetType;
         using argType = ArgType;
-        // virtual const RetType call(ArgType, ArgType, ArgType) const noexcept = 0;
+        virtual const RetType call(ArgType) const noexcept = 0;
         // print formula
         virtual const std::string /* formulate */ strigify() const noexcept = 0;
     };

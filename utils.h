@@ -8,4 +8,26 @@ struct Compare {
     }
 };
 
+template<typename T1, typename T2>
+struct PairCompareGreater
+{
+    bool operator() (
+        const std::pair<T1, T2>& lhs,
+        const std::pair<T1, T2>& rhs) const
+    {
+        return lhs.first > rhs.first;
+    }
+};
+
+template<typename T1, typename T2>
+struct PairCompareLesser
+{
+    bool operator() (
+        const std::pair<T1, T2>& lhs,
+        const std::pair<T1, T2>& rhs) const
+    {
+        return lhs.first < rhs.first;
+    }
+};
+
 #endif
