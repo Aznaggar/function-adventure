@@ -53,9 +53,7 @@ namespace obj::polynomial
 
         const std::string strigify() const noexcept { return ""; }
         
-        // void sortArgs() { _argList.sort(Greater<powerType, coeffType>()); }
-
-        void printArgs() const
+        void debug_printArgs() const
         {
             for(const auto& arg : _argList)
             {
@@ -75,7 +73,7 @@ namespace obj::polynomial
             });
             _argList = outArgs;
             return *this;
-        }    
+        }
         Polynomial& operator+(const Polynomial& other) {}
         Polynomial& operator-(const Polynomial& other) {}
         /* To do: Fraction function object*/
@@ -83,7 +81,8 @@ namespace obj::polynomial
         // Polynomial& operator/(const Polynomial& other);
     private:
         polyArgListType _argList;
-        void inline sort() { _argList.sort() }
+        void inline sort() { _argList.sort(Greater<powerType, coeffType>()); }
+        void inline simplify() { }
     };
 }
 
