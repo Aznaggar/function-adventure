@@ -90,8 +90,25 @@ namespace obj::polynomial
             merge(negate(other._argList));
             return*this;
         }
+        Polynomial& operator*(const Polynomial& other)
+        {
+            polyArgListType result;
+            for(const auto& otherArg : other._argList)
+            {
+                polyArgListType partial;
+                for(const auto& arg : _argList)
+                {
+                    partial.push_back({
+                        otherArg.first + arg.first,
+                        otherArg.second * arg.second
+                    });
+                }
+                extend(partial, result);
+            }
+            _argList = result;
+            return *this;
+        }
         /* To do: Fraction function object*/
-        // Polynomial& operator*(const Polynomial& other);
         // Polynomial& operator/(const Polynomial& other);
 
     private:
@@ -115,8 +132,7 @@ namespace obj::polynomial
             }
         }
 
-        template<typename T = polyArgListType>
-        T negate(polyArgListType list) const
+        polyArgListType negate(polyArgListType list) const
         {
             polyArgListType outArgs;
             std::transform(list.begin(), list.end(), std::back_inserter(outArgs), [](polyArgType& arg)
@@ -126,6 +142,15 @@ namespace obj::polynomial
             });
             return outArgs;
         }
+
+        void extend(const polyArgListType& from, polyArgListType& to) const
+        {
+            for(const auto& f : from)
+            {
+                to.push_back(f);
+            }
+        }
+
     };
 }
 
