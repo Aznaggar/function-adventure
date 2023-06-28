@@ -19,10 +19,18 @@ void testing()
     });
     poly.debug_printArgs();
     poly.simplify();
+    -poly;
     poly.debug_printArgs();
     poly2.debug_printArgs();
-    poly2.simplify();
-    poly2.debug_printArgs();
+    auto poly3 = poly + poly2;
+    poly3.debug_printArgs();
+    poly3.simplify();
+    poly3.debug_printArgs();
+    auto poly4 = poly - poly2;
+    poly4.debug_printArgs();
+    poly4.simplify();
+    poly4.debug_printArgs();
+
     // std::cout << poly.call(2.02f) << std::endl;
     // std::cout << poly.strigify() << std::endl;
 }

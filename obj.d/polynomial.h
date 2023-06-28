@@ -44,33 +44,7 @@ namespace obj::polynomial
 
         const std::string strigify() const noexcept { return ""; }
         
-        void debug_printArgs() const
-        {
-            for(const auto& arg : _argList)
-            {
-                std::cout << "(" << arg.first << ", " << arg.second << "), ";
-            }
-            std::cout << std::endl;
-        }
-        
-        Polynomial& operator+() const { return *this; }
-        Polynomial& operator-()
-        {
-            polyArgListType outArgs;
-            std::transform(_argList.begin(), _argList.end(), std::back_inserter(outArgs), [](polyArgType& arg)
-            {
-                arg.second *= -1.0f;
-                return arg;
-            });
-            _argList = outArgs;
-            return *this;
-        }
-        Polynomial& operator+(const Polynomial& other) {}
-        Polynomial& operator-(const Polynomial& other) {}
-        /* To do: Fraction function object*/
-        // Polynomial& operator*(const Polynomial& other);
-        // Polynomial& operator/(const Polynomial& other);
-        void simplify()
+        const void simplify()
         {
             polyArgListType unique, simplified;
             for(const auto& p : _argList)
@@ -91,6 +65,35 @@ namespace obj::polynomial
             _argList = simplified;
         }
 
+        void debug_printArgs() const
+        {
+            for(const auto& arg : _argList)
+            {
+                std::cout << "(" << arg.first << ", " << arg.second << "), ";
+            }
+            std::cout << std::endl;
+        }
+        
+        Polynomial& operator+() const { return *this; }
+        Polynomial& operator-()
+        {
+            _argList = negate(_argList);
+            return *this;
+        }
+        Polynomial& operator+(const Polynomial& other)
+        {
+            merge(other._argList);
+            return *this;
+        }
+        Polynomial& operator-(const Polynomial other)
+        {
+            merge(negate(other._argList));
+            return*this;
+        }
+        /* To do: Fraction function object*/
+        // Polynomial& operator*(const Polynomial& other);
+        // Polynomial& operator/(const Polynomial& other);
+
     private:
         polyArgListType _argList;
         void inline sort() { _argList.sort(polyArgComparer()); }
@@ -101,6 +104,27 @@ namespace obj::polynomial
             for (; first != last; ++first)
                 if (first->first == value.first) return first;
             return last;
+        }
+
+        template<typename T = polyArgListType>
+        void merge(const T& list)
+        {
+            for(const auto& p : list)
+            {
+                _argList.push_back(p);
+            }
+        }
+
+        template<typename T = polyArgListType>
+        T negate(polyArgListType list) const
+        {
+            polyArgListType outArgs;
+            std::transform(list.begin(), list.end(), std::back_inserter(outArgs), [](polyArgType& arg)
+            {
+                arg.second *= -1.0f;
+                return arg;
+            });
+            return outArgs;
         }
     };
 }
