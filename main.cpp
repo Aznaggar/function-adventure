@@ -25,10 +25,10 @@ void testing()
         poly.simplify();
         poly.debug_printArgs();
         std::cout << "pPoly = +(Poly #1); Usage of: unary(+)" << std::endl;
-        auto pPoly = +poly;
+        const auto pPoly = +poly;
         pPoly.debug_printArgs();
         std::cout << "nPoly = -(Poly #1); Usage of: unary(-)" << std::endl;
-        auto nPoly = -poly;
+        const auto nPoly = -poly;
         nPoly.debug_printArgs();
         std::cout << "Poly #2" << std::endl;
         poly2.debug_printArgs();
@@ -38,12 +38,15 @@ void testing()
         std::cout << "Poly #3.simplify()" << std::endl;
         poly3.simplify();
         poly3.debug_printArgs();
-        std::cout << "Poly #3 = Poly #1 - Poly #2; Usage of: binary(-)" << std::endl;
+        std::cout << "Poly #4 = Poly #1 - Poly #2; Usage of: binary(-)" << std::endl;
         auto poly4 = poly - poly2;
         poly4.debug_printArgs();
-        std::cout << "Poly #3.simplify()" << std::endl;
+        std::cout << "Poly #4.simplify()" << std::endl;
         poly4.simplify();
         poly4.debug_printArgs();
+        std::cout << "Poly #5 = Poly #1 - x^3; x^3 is pre-defined; Usage of: binary(-)" << std::endl;
+        const auto poly5 = poly + pre::polynomials::x3;
+        poly5.debug_printArgs(false);
     };
     auto polyMul = []()
     {

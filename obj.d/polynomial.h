@@ -11,7 +11,7 @@
 
 namespace obj::polynomial
 {
-    using coeffDefType = long double /* signed int */;
+    using coeffDefType = signed int;
     using powerDefType = unsigned int;
     
     template<typename powerType=powerDefType, typename coeffType=coeffDefType>
@@ -21,9 +21,9 @@ namespace obj::polynomial
         using polyArgType = std::pair<powerType, coeffType>;
         using polyArgListType = std::list<polyArgType>;
         using polyArgComparer = PairCompareGreater<powerType, coeffType>;
-        using polyArgListIt = typename polyArgListType::iterator;
+        using polyArgListIt = polyArgListType::iterator;
         
-        Polynomial() {}
+        Polynomial() = delete;
         Polynomial(const polyArgListType& argList) : _argList(argList) { sort(); }
         Polynomial(const Polynomial &other) = default;
         Polynomial(Polynomial &&other) = default;
@@ -70,12 +70,9 @@ namespace obj::polynomial
             _argList = simplified;
         }
 
-        void debug_printArgs() const
+        void debug_printArgs(bool endl = true) const
         {
-            if (_argList.empty())
-            {
-                std::cout << "<< no args >>" << std::endl;
-            }
+            if (_argList.empty()) { std::cout << "<< no args >>" << std::endl; }
             else
             {
                 for(const auto& arg : _argList)
@@ -84,6 +81,7 @@ namespace obj::polynomial
                 }
                 std::cout << std::endl;
             }
+            if (endl) std::cout << std::endl;
         }
 
         Polynomial operator+() const { return *this; }
@@ -116,7 +114,7 @@ namespace obj::polynomial
         // Polynomial& operator/(const Polynomial& other);
     private:
         polyArgListType _argList;
-        
+
         void inline sort() { _argList.sort(polyArgComparer()); }
         
         template<class InputIt = polyArgListIt, class T = polyArgType>
