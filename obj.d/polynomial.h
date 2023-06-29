@@ -24,7 +24,7 @@ namespace obj::polynomial
         using polyArgComparer = PairCompareGreater<powerType, coeffType>;
         using polyArgListIt = typename polyArgListType::iterator;
         
-        Polynomial() = delete;
+        Polynomial() {}
         Polynomial(const polyArgListType& argList) : _argList(argList) { sort(); }
         Polynomial(const Polynomial &other) = default;
         Polynomial(Polynomial &&other) = default;
@@ -47,6 +47,7 @@ namespace obj::polynomial
         {
             std::stringstream ret;
             auto list = _argList;
+            removeZeros(list);
 
             for(auto it = list.begin(); it != list.end(); ++it)
             {
@@ -64,8 +65,7 @@ namespace obj::polynomial
                     if (coeff_abs_int > 1) { ret << coeff_abs; }
                 }
 
-                if (power == 0) { continue; }
-                else
+                if (power > 0)
                 {
                     ret << argChar;
                     if (power > 1) { ret << '^' << power; }
@@ -74,8 +74,7 @@ namespace obj::polynomial
                 ret << ' ';
             }
 
-            if (ret.str().empty()) return "<< No poly args >>";
-            else return ret.str();
+            return ret.str().empty() ? "0" : ret.str();
         }
         
         void simplify()
@@ -96,11 +95,9 @@ namespace obj::polynomial
                     simplified.push_back(p);
                 }
             }
-            simplified.erase(std::remove_if(
-                simplified.begin(),
-                simplified.end(),
-                [](polyArgType arg) { return arg.second == 0; }
-            ), simplified.end());
+            
+            removeZeros(simplified);
+
             _argList = simplified;
         }
 
@@ -188,6 +185,15 @@ namespace obj::polynomial
             }
         }
         
+        void removeZeros(polyArgListType& list) const
+        {
+            list.erase(std::remove_if(
+                list.begin(),
+                list.end(),
+                [](polyArgType arg) { return arg.second == 0; }
+            ), list.end());
+        }
+
     };
 }
 
