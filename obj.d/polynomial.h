@@ -11,7 +11,7 @@
 
 namespace obj::polynomial
 {
-    using coeffDefType = signed int;
+    using coeffDefType = long double /* signed int */;
     using powerDefType = unsigned int;
     
     template<typename powerType=powerDefType, typename coeffType=coeffDefType>
@@ -21,9 +21,9 @@ namespace obj::polynomial
         using polyArgType = std::pair<powerType, coeffType>;
         using polyArgListType = std::list<polyArgType>;
         using polyArgComparer = PairCompareGreater<powerType, coeffType>;
-        using polyArgListIt = polyArgListType::iterator;
-
-        Polynomial() = delete;
+        using polyArgListIt = typename polyArgListType::iterator;
+        
+        Polynomial() {}
         Polynomial(const polyArgListType& argList) : _argList(argList) { sort(); }
         Polynomial(const Polynomial &other) = default;
         Polynomial(Polynomial &&other) = default;
@@ -44,7 +44,7 @@ namespace obj::polynomial
 
         const std::string strigify() const noexcept { return ""; }
         
-        const void simplify()
+        void simplify()
         {
             polyArgListType unique, simplified;
             for(const auto& p : _argList)
@@ -62,35 +62,39 @@ namespace obj::polynomial
                     simplified.push_back(p);
                 }
             }
+            simplified.erase(std::remove_if(
+                simplified.begin(),
+                simplified.end(),
+                [](polyArgType arg) { return arg.second == 0; }
+            ), simplified.end());
             _argList = simplified;
         }
 
         void debug_printArgs() const
         {
-            for(const auto& arg : _argList)
+            if (_argList.empty())
             {
-                std::cout << "(" << arg.first << ", " << arg.second << "), ";
+                std::cout << "<< no args >>" << std::endl;
             }
-            std::cout << std::endl;
+            else
+            {
+                for(const auto& arg : _argList)
+                {
+                    std::cout << "(" << arg.first << ", " << arg.second << "), ";
+                }
+                std::cout << std::endl;
+            }
         }
-        
-        Polynomial& operator+() const { return *this; }
-        Polynomial& operator-()
+
+        Polynomial operator+() const { return *this; }
+        Polynomial operator-()
         {
-            _argList = negate(_argList);
-            return *this;
+            Polynomial<>temp = (negate(_argList));
+            return temp;
         }
-        Polynomial& operator+(const Polynomial& other)
-        {
-            merge(other._argList);
-            return *this;
-        }
-        Polynomial& operator-(const Polynomial other)
-        {
-            merge(negate(other._argList));
-            return*this;
-        }
-        Polynomial& operator*(const Polynomial& other)
+        Polynomial operator+(const Polynomial& other) { return Polynomial<>(merge(other._argList, _argList)); }
+        Polynomial operator-(const Polynomial other)  { return Polynomial<>(merge(negate(other._argList), _argList)); }
+        Polynomial operator*(const Polynomial& other)
         {
             polyArgListType result;
             for(const auto& otherArg : other._argList)
@@ -110,9 +114,9 @@ namespace obj::polynomial
         }
         /* To do: Fraction function object*/
         // Polynomial& operator/(const Polynomial& other);
-
     private:
         polyArgListType _argList;
+        
         void inline sort() { _argList.sort(polyArgComparer()); }
         
         template<class InputIt = polyArgListIt, class T = polyArgType>
@@ -124,12 +128,18 @@ namespace obj::polynomial
         }
 
         template<typename T = polyArgListType>
-        void merge(const T& list)
+        T merge(const T& first, const T& second) const
         {
-            for(const auto& p : list)
+            T ret;
+            for(const auto& p : first)
             {
-                _argList.push_back(p);
+                ret.push_back(p);
             }
+            for(const auto& p : second)
+            {
+                ret.push_back(p);
+            }
+            return ret;
         }
 
         polyArgListType negate(polyArgListType list) const
