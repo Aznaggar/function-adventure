@@ -21,7 +21,7 @@ namespace obj::polynomial
         using polyArgType = std::pair<powerType, coeffType>;
         using polyArgListType = std::list<polyArgType>;
         using polyArgComparer = PairCompareGreater<powerType, coeffType>;
-        using polyArgListIt = polyArgListType::iterator;
+        using polyArgListIt = typename polyArgListType::iterator;
         
         Polynomial() = delete;
         Polynomial(const polyArgListType& argList) : _argList(argList) { sort(); }
@@ -85,14 +85,10 @@ namespace obj::polynomial
         }
 
         Polynomial operator+() const { return *this; }
-        Polynomial operator-()
-        {
-            Polynomial<>temp = (negate(_argList));
-            return temp;
-        }
+        Polynomial operator-() const { return Polynomial<>(negate(_argList)); }
         Polynomial operator+(const Polynomial& other) { return Polynomial<>(merge(other._argList, _argList)); }
         Polynomial operator-(const Polynomial other)  { return Polynomial<>(merge(negate(other._argList), _argList)); }
-        Polynomial operator*(const Polynomial& other)
+        Polynomial operator*(const Polynomial& other) const
         {
             polyArgListType result;
             for(const auto& otherArg : other._argList)
@@ -107,8 +103,7 @@ namespace obj::polynomial
                 }
                 extend(partial, result);
             }
-            _argList = result;
-            return *this;
+            return Polynomial<>(result);
         }
         /* To do: Fraction function object*/
         // Polynomial& operator/(const Polynomial& other);

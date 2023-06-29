@@ -58,14 +58,19 @@ void testing()
             {2u, 3},
             {1u, 1},
         });
+        std::cout << "Poly #1" << std::endl;
         polyForMul.debug_printArgs();
+        std::cout << "Poly #2" << std::endl;
         polyForMul2.debug_printArgs();
+        std::cout << "PolyMul = (Poly #1) * (Poly #2)" << std::endl;
         auto polyMulRes = polyForMul * polyForMul2;
         polyMulRes.debug_printArgs();
+        std::cout << "PolyMul.simplify()" << std::endl;
         polyMulRes.simplify();
-        polyMulRes.debug_printArgs();
+        polyMulRes.debug_printArgs(false);
     };
-    polyFirst();
+    // polyFirst();
+    polyMul();
     // std::cout << poly.call(2.02f) << std::endl;
     // std::cout << poly.strigify() << std::endl;
 }
