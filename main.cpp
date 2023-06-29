@@ -18,12 +18,14 @@ void testing()
             {4u, -2},
             {9u, 3},
             {9u, 1},
+            {0u, 23},
         });
         obj::polynomial::Polynomial<> poly2({
             {4u, 1},
             {3u, -2},
             {2u, 3},
             {1u, 1},
+            {0u, -42},
         });
 
         print("Poly #1", poly);
