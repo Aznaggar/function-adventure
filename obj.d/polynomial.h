@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cmath>
 #include <list>
+#include <sstream>
 #include <utility>
 
 #include "function.h"
@@ -11,7 +12,7 @@
 
 namespace obj::polynomial
 {
-    using coeffDefType = signed int;
+    using coeffDefType = long double;
     using powerDefType = unsigned int;
     
     template<typename powerType=powerDefType, typename coeffType=coeffDefType>
@@ -42,7 +43,40 @@ namespace obj::polynomial
             return sum(arg, _argList);
         }
 
-        const std::string strigify() const noexcept { return ""; }
+        const std::string strigify(const char argChar='x') const noexcept
+        {
+            std::stringstream ret;
+            auto list = _argList;
+
+            for(auto it = list.begin(); it != list.end(); ++it)
+            {
+                const auto sign = (std::signbit(it->second)) ? '-' : '+';
+                const auto power = it->first;
+                const auto coeff = it->second;
+                const auto coeff_abs = std::abs(coeff);
+                const auto coeff_abs_int = static_cast<int>(coeff_abs);
+                
+                if (coeff_abs_int == 0) { continue; }
+                else
+                {
+                    if      ((it == list.begin()) && (sign == '-')) { ret << sign; }
+                    else if ((it != list.begin())) { ret << sign << ' '; }
+                    if (coeff_abs_int > 1) { ret << coeff_abs; }
+                }
+
+                if (power == 0) { continue; }
+                else
+                {
+                    ret << argChar;
+                    if (power > 1) { ret << '^' << power; }
+                }
+
+                ret << ' ';
+            }
+
+            if (ret.str().empty()) return "<< No poly args >>";
+            else return ret.str();
+        }
         
         void simplify()
         {
@@ -153,56 +187,8 @@ namespace obj::polynomial
                 to.push_back(f);
             }
         }
-
+        
     };
 }
-
-        /*
-        {
-            const auto toString = [](const char argChar, const listType& list)
-            {
-                std::stringstream ret;
-                for(auto it = list.begin(); it != list.end(); it = std::next(it))
-                {
-                    const auto coeff_s = it->first;
-                    const auto coeff = std::abs(coeff_s);
-                    const auto power = it->second; 
-                    char sign = (coeff_s > 0) ? '+' : '-';
-
-                    // ret << sign << " " << coeff << argChar << "^" << power << " ";
-
-                    switch(coeff)
-                    {
-                        case 0:
-                            continue;
-                            break;
-                        case 1:
-                            if (sign == '-') { ret << sign; }
-                            if ((it != list.begin()) && (sign == '+')) { ret << ' '; }
-                            break;
-                        default:
-                            ret << sign << ' ' << coeff;
-                            break;
-                    }
-                    switch(power)
-                    {
-                        case 0:
-                            continue;
-                        case 1:
-                            ret << argChar;
-                            break;
-                        default:
-                            ret << argChar << '^' << power;
-                            break;
-                    }
-                    ret << ' ';
-                }
-
-                return ret.str();
-            };
-
-            return toString('x', xList) + toString('y', yList) + toString('z', zList);
-        }
-        */
 
 #endif
