@@ -3,9 +3,15 @@
 #include "obj"
 #include "pre"
 
+void print(const std::string& description, const Polynomial<>& poly, bool lastNewLine = true)
+{
+    std::cout << description << std::endl << poly.strigify() << std::endl;
+    if (lastNewLine) std::cout << std::endl;
+};
+
 void testing()
 {
-    auto polyFirst = []()
+    auto polyAddSub = []()
     {
         obj::polynomial::Polynomial<> poly({
             {7u, 1},
@@ -19,34 +25,34 @@ void testing()
             {2u, 3},
             {1u, 1},
         });
-        std::cout << "Poly #1" << std::endl;
-        poly.debug_printArgs();
-        std::cout << "Poly #1.simplify()" << std::endl;
+
+        print("Poly #1", poly);
+
         poly.simplify();
-        poly.debug_printArgs();
-        std::cout << "pPoly = +(Poly #1); Usage of: unary(+)" << std::endl;
+        print("(Poly #1).simplify()", poly);
+
         const auto pPoly = +poly;
-        pPoly.debug_printArgs();
-        std::cout << "nPoly = -(Poly #1); Usage of: unary(-)" << std::endl;
+        print("pPoly = +(Poly #1); Usage of: unary(+)", pPoly);
+
         const auto nPoly = -poly;
-        nPoly.debug_printArgs();
-        std::cout << "Poly #2" << std::endl;
-        poly2.debug_printArgs();
-        std::cout << "Poly #3 = (Poly #1 + Poly #2) + Poly #2 - Poly #1; Usage of: binary(+), binary(-)" << std::endl;
+        print("nPoly = -(Poly #1); Usage of: unary(-)", nPoly);
+
+        print("Poly #2", poly2);
+
         auto poly3 = (poly + poly2) - poly2 - poly;
-        poly3.debug_printArgs();
-        std::cout << "Poly #3.simplify()" << std::endl;
+        print("Poly #3 = (Poly #1 + Poly #2) + Poly #2 - Poly #1; Usage of: binary(+), binary(-)", poly3);
+
         poly3.simplify();
-        poly3.debug_printArgs();
-        std::cout << "Poly #4 = Poly #1 - Poly #2; Usage of: binary(-)" << std::endl;
+        print("(Poly #3).simplify()", poly3);
+
         auto poly4 = poly - poly2;
-        poly4.debug_printArgs();
-        std::cout << "Poly #4.simplify()" << std::endl;
+        print("Poly #4 = Poly #1 - Poly #2; Usage of: binary(-)", poly4);
+
         poly4.simplify();
-        poly4.debug_printArgs();
-        std::cout << "Poly #5 = Poly #1 - x^3; x^3 is pre-defined; Usage of: binary(-)" << std::endl;
+        print("(Poly #4).simplify()", poly4);
+
         const auto poly5 = poly + pre::polynomials::x3;
-        poly5.debug_printArgs(false);
+        print("Poly #5 = Poly #1 - x^3; x^3 is pre-defined; Usage of: binary(-)", poly5, false);
     };
     auto polyMul = []()
     {
@@ -58,21 +64,23 @@ void testing()
             {2u, 3},
             {1u, 1},
         });
-        std::cout << "Poly #1" << std::endl;
-        polyForMul.debug_printArgs();
-        std::cout << "Poly #2" << std::endl;
-        polyForMul2.debug_printArgs();
-        std::cout << "PolyMul = (Poly #1) * (Poly #2)" << std::endl;
+        
+        print("polyForMul #1", polyForMul);
+        print("polyForMul #2", polyForMul2);
+
         auto polyMulRes = polyForMul * polyForMul2;
-        polyMulRes.debug_printArgs();
-        std::cout << "PolyMul.simplify()" << std::endl;
+        print("polyMulRes = (polyForMul #1) * (polyForMul #2)", polyMulRes);
+
         polyMulRes.simplify();
-        polyMulRes.debug_printArgs(false);
+        print("PolyMulRes.simplify()", polyMulRes, false);
     };
-    // polyFirst();
+    
+    std::cout << "==============[Poly sum / diff]==================" << std::endl;
+    polyAddSub();
+    std::cout << "=================================================" << std::endl;
+    std::cout << "=============[Poly muliplication]================" << std::endl;
     polyMul();
-    // std::cout << poly.call(2.02f) << std::endl;
-    // std::cout << poly.strigify() << std::endl;
+    std::cout << "=================================================" << std::endl;
 }
 
 int main()

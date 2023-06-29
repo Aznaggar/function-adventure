@@ -35,7 +35,7 @@ namespace obj::function
         using argType = ArgType;
         virtual const RetType call(ArgType) const noexcept = 0;
         // print formula
-        virtual const std::string /* formulate */ strigify() const noexcept = 0;
+        virtual const std::string strigify(const char argChar) const noexcept = 0;
     };
 }
 
