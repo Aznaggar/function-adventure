@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "function.h"
-#include "../utils.h"
+#include "../utils.d/comparators.h"
 
 namespace obj::rational
 {
@@ -19,6 +19,7 @@ namespace obj::rational
 
 using namespace obj::rational;
 using namespace obj::function;
+using namespace utils::comparators;
 
 namespace obj::polynomial
 {
@@ -128,8 +129,8 @@ namespace obj::polynomial
 
         Polynomial operator+() const { return *this; }
         Polynomial operator-() const { return Polynomial<>(negate(argList)); }
-        Polynomial operator+(const Polynomial& other) { return Polynomial<>(merge(other.argList, argList)); }
-        Polynomial operator-(const Polynomial& other) { return Polynomial<>(merge(negate(other.argList), argList)); }
+        Polynomial operator+(const Polynomial& other) const { return Polynomial<>(merge(other.argList, argList)); }
+        Polynomial operator-(const Polynomial& other) const { return Polynomial<>(merge(negate(other.argList), argList)); }
         Polynomial operator*(const Polynomial& other) const
         {
             polyArgListType result;

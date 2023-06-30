@@ -1,7 +1,7 @@
 #ifndef FUNCTION_OPERATIONS_H
 #define FUNCTION_OPERATIONS_H
 
-#include "../obj"
+#include "../headers/obj"
 
 namespace obj::function
 {
