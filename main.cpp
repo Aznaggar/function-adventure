@@ -1,7 +1,6 @@
 #include <iostream>
 
-#include "obj"
-#include "pre"
+#include "headers/com"
 
 using Polynomial_t  = Polynomial<>;
 using Rational_t = Rational<Polynomial<>, Polynomial<>>;

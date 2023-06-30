@@ -12,6 +12,9 @@ namespace obj::rational
     {
         Rational() = delete;
         Rational(Nominator n, Denominator d): nominator(n), denominator(d) {}
+        Rational(const Rational& other) = default;
+        Rational(Rational&& other) = default;
+
         const retType call(argType arg) const noexcept
         {
             const auto nValue = nominator.call(arg);
@@ -29,6 +32,10 @@ namespace obj::rational
 
             return asFraction ? _fraction : _inline;
         }
+
+        
+
+
 
     private:
         Nominator nominator;
