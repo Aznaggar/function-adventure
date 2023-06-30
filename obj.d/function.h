@@ -13,6 +13,7 @@ namespace obj::function
         g_ratio,
         
         polynomial,
+        rational,
     /*
         rational_powers,
         exponential,
@@ -27,6 +28,7 @@ namespace obj::function
 
     using RetDefType = long double;
     using ArgDefType = long double;
+    constexpr inline const char defArgChar{'x'};
 
     template<functionType FuncType, typename RetType=RetDefType, typename ArgType=ArgDefType>
     struct Function
@@ -34,8 +36,7 @@ namespace obj::function
         using retType = RetType;
         using argType = ArgType;
         virtual const RetType call(ArgType) const noexcept = 0;
-        // print formula
-        virtual const std::string strigify(const char argChar) const noexcept = 0;
+        virtual const std::string strigify(const bool flag, const char argChar) const noexcept = 0;
     };
 }
 

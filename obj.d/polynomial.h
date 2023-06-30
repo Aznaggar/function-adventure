@@ -4,28 +4,39 @@
 #include <algorithm>
 #include <cmath>
 #include <list>
+#include <memory>
 #include <sstream>
 #include <utility>
 
 #include "function.h"
 #include "../utils.h"
 
+namespace obj::rational
+{
+    template<typename Nominator, typename Denominator>
+    struct Rational;
+}
+
+using namespace obj::rational;
+using namespace obj::function;
+
 namespace obj::polynomial
 {
     using coeffDefType = long double;
     using powerDefType = unsigned int;
-    
+
     template<typename powerType=powerDefType, typename coeffType=coeffDefType>
-    struct Polynomial : public obj::function::Function<obj::function::functionType::polynomial>
+    struct Polynomial : public Function<functionType::polynomial>
     {
     public:
         using polyArgType = std::pair<powerType, coeffType>;
         using polyArgListType = std::list<polyArgType>;
         using polyArgComparer = PairCompareGreater<powerType, coeffType>;
         using polyArgListIt = typename polyArgListType::iterator;
+        using rationalIncompleteType = Rational<Polynomial<>, Polynomial<>>;
         
         Polynomial() {}
-        Polynomial(const polyArgListType& argList) : _argList(argList) { sort(); }
+        Polynomial(const polyArgListType& argList) : argList(argList) { sort(); }
         Polynomial(const Polynomial &other) = default;
         Polynomial(Polynomial &&other) = default;
         
@@ -40,13 +51,13 @@ namespace obj::polynomial
                 }
                 return ret;
             };
-            return sum(arg, _argList);
+            return sum(arg, argList);
         }
 
-        const std::string strigify(const char argChar='x') const noexcept
+        const std::string strigify(const bool flag=false, const char argChar=defArgChar) const noexcept
         {
             std::stringstream ret;
-            auto list = _argList;
+            auto list = argList;
             removeZeros(list);
 
             for(auto it = list.begin(); it != list.end(); ++it)
@@ -80,7 +91,7 @@ namespace obj::polynomial
         void simplify()
         {
             polyArgListType unique, simplified;
-            for(const auto& p : _argList)
+            for(const auto& p : argList)
             {
                 if (find(unique.begin(), unique.end(), p) != unique.end())
                 {
@@ -95,18 +106,18 @@ namespace obj::polynomial
                     simplified.push_back(p);
                 }
             }
-            
+
             removeZeros(simplified);
 
-            _argList = simplified;
+            argList = simplified;
         }
 
         void debug_printArgs(bool endl = true) const
         {
-            if (_argList.empty()) { std::cout << "<< no args >>" << std::endl; }
+            if (argList.empty()) { std::cout << "<< no args >>" << std::endl; }
             else
             {
-                for(const auto& arg : _argList)
+                for(const auto& arg : argList)
                 {
                     std::cout << "(" << arg.first << ", " << arg.second << "), ";
                 }
@@ -116,16 +127,16 @@ namespace obj::polynomial
         }
 
         Polynomial operator+() const { return *this; }
-        Polynomial operator-() const { return Polynomial<>(negate(_argList)); }
-        Polynomial operator+(const Polynomial& other) { return Polynomial<>(merge(other._argList, _argList)); }
-        Polynomial operator-(const Polynomial other)  { return Polynomial<>(merge(negate(other._argList), _argList)); }
+        Polynomial operator-() const { return Polynomial<>(negate(argList)); }
+        Polynomial operator+(const Polynomial& other) { return Polynomial<>(merge(other.argList, argList)); }
+        Polynomial operator-(const Polynomial& other) { return Polynomial<>(merge(negate(other.argList), argList)); }
         Polynomial operator*(const Polynomial& other) const
         {
             polyArgListType result;
-            for(const auto& otherArg : other._argList)
+            for(const auto& otherArg : other.argList)
             {
                 polyArgListType partial;
-                for(const auto& arg : _argList)
+                for(const auto& arg : argList)
                 {
                     partial.push_back({
                         otherArg.first + arg.first,
@@ -136,25 +147,26 @@ namespace obj::polynomial
             }
             return Polynomial<>(result);
         }
-        /* To do: Fraction function object*/
-        // Polynomial& operator/(const Polynomial& other);
-    private:
-        polyArgListType _argList;
+        std::shared_ptr<rationalIncompleteType> operator/(const Polynomial& other) const
+        {
+            return std::make_shared<rationalIncompleteType>(*this, other);
+        }
 
-        void inline sort() { _argList.sort(polyArgComparer()); }
+    private:
+        polyArgListType argList;
+
+        void inline sort() { argList.sort(polyArgComparer()); }
         
-        template<class InputIt = polyArgListIt, class T = polyArgType>
-        InputIt find(InputIt first, InputIt last, const T& value)
+        static const polyArgListIt find(polyArgListIt first, polyArgListIt last, const polyArgType& value)
         {
             for (; first != last; ++first)
                 if (first->first == value.first) return first;
             return last;
         }
 
-        template<typename T = polyArgListType>
-        T merge(const T& first, const T& second) const
+        static const polyArgListType merge(const polyArgListType& first, const polyArgListType& second)
         {
-            T ret;
+            polyArgListType ret;
             for(const auto& p : first)
             {
                 ret.push_back(p);
@@ -166,7 +178,7 @@ namespace obj::polynomial
             return ret;
         }
 
-        polyArgListType negate(polyArgListType list) const
+        static const polyArgListType negate(polyArgListType list)
         {
             polyArgListType outArgs;
             std::transform(list.begin(), list.end(), std::back_inserter(outArgs), [](polyArgType& arg)
@@ -177,7 +189,7 @@ namespace obj::polynomial
             return outArgs;
         }
 
-        void extend(const polyArgListType& from, polyArgListType& to) const
+        static void extend(const polyArgListType& from, polyArgListType& to)
         {
             for(const auto& f : from)
             {
@@ -185,7 +197,7 @@ namespace obj::polynomial
             }
         }
         
-        void removeZeros(polyArgListType& list) const
+        static void removeZeros(polyArgListType& list)
         {
             list.erase(std::remove_if(
                 list.begin(),

@@ -3,11 +3,16 @@
 #include "obj"
 #include "pre"
 
-void print(const std::string& description, const Polynomial<>& poly, bool lastNewLine = true)
+using Polynomial_t  = Polynomial<>;
+using Rational_t = Rational<Polynomial<>, Polynomial<>>;
+
+template <typename T = Polynomial_t>
+void print(const std::string& description, const T& object, const bool strFlag = false, const bool lastNewLine = true)
 {
-    std::cout << description << std::endl << poly.strigify() << std::endl;
+    std::cout << description << std::endl << object.strigify(strFlag) << std::endl;
     if (lastNewLine) std::cout << std::endl;
 };
+
 
 void testing()
 {
@@ -76,12 +81,33 @@ void testing()
         polyMulRes.simplify();
         print("PolyMulRes.simplify()", polyMulRes, false);
     };
-    
+    auto polyDivRational = []()
+    {
+        using namespace obj::polynomial;
+        Polynomial<> polyForDiv({
+            {2u, 1},
+            {3u, -2},
+        });
+        Polynomial<> polyForDiv2({
+            {2u, 3},
+            {1u, 1},
+        });
+        print("polyForDiv #1", polyForDiv);
+        print("polyForDiv #2", polyForDiv2);
+        auto r1 = std::make_shared<Rational_t>(polyForDiv2, polyForDiv);
+        print<Rational_t>("Rational #1 = Rational(polyForDiv #2, polyForDiv #1); Fraction form", *r1, true);
+        auto r2 = polyForDiv2 / polyForDiv;
+        print<Rational_t>("Rational #2 = (polyForDiv #1) / (polyForDiv #2); Inline form", *r2, false, false);
+    };
+
     std::cout << "==============[Poly sum / diff]==================" << std::endl;
     polyAddSub();
     std::cout << "=================================================" << std::endl;
     std::cout << "=============[Poly muliplication]================" << std::endl;
     polyMul();
+    std::cout << "=================================================" << std::endl;
+    std::cout << "============[Poly division][Rationals]===========" << std::endl;
+    polyDivRational();
     std::cout << "=================================================" << std::endl;
 }
 

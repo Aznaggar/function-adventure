@@ -3,6 +3,7 @@
 
 // #include "obj.d/constant.h"
 #include "obj.d/polynomial.h"
+#include "obj.d/rational.h"
 // #include "obj.d/operations.h"
 
 #endif
